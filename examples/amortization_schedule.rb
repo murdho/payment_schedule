@@ -196,51 +196,53 @@ class AmortizationSchedule
     memory[:schedules][schedule_name][attr_name][row_no] = value
   end
 
+  def define_helper(name, value = nil, &algorithm)
+    instructions[:helpers][name] = value || algorithm
+  end
+
   def register_instructions
     schedules[:amortization] = amortization_instructions
 
     validate_instructions!
 
-    instructions[:helpers] = {
-      interest_rate_month: proc do
-        (1 + get(:interest_rate_year).to_d) ** (1.to_d / 12) - 1
-      end,
+    define_helper(:interest_rate_month) do
+      (1 + get(:interest_rate_year).to_d) ** (1.to_d / 12) - 1
+    end
 
-      monthly_payment_without_fees: proc do
-        tank = (get(:loan_amount).to_d * get(:interest_rate_month)) / (1 - (1 + get(:interest_rate_month)) ** (-get(:loan_term)))
-        tank.round(2)
-      end,
+    define_helper(:monthly_payment_without_fees) do
+      tank = (get(:loan_amount).to_d * get(:interest_rate_month)) / (1 - (1 + get(:interest_rate_month)) ** (-get(:loan_term)))
+      tank.round(2)
+    end
 
-      monthly_payment: proc do
-        get(:monthly_payment_without_fees) + get(:additional_fees)
-      end,
+    define_helper(:monthly_payment) do
+      get(:monthly_payment_without_fees) + get(:additional_fees)
+    end
 
-      last_payment_date: proc do
-        amortization(:date, get(:loan_term))
-      end,
+    define_helper(:last_payment_date) do
+      amortization(:date, get(:loan_term))
+    end
 
-      last_payment_amount: proc do
-        amortization(:monthly_payment, get(:loan_term))
-      end,
+    define_helper(:last_payment_amount) do
+      amortization(:monthly_payment, get(:loan_term))
+    end
 
-      total_interest_paid: proc do
-        first_row_no  = 0
-        last_row_no   = get(:loan_term)
+    define_helper(:total_interest_paid) do
+      first_row_no  = 0
+      last_row_no   = get(:loan_term)
 
-        (first_row_no..last_row_no).sum do |row_no|
-          amortization(:interest, row_no)
-        end
-      end,
-
-      total_amount_paid: proc do
-        first_row_no  = 0
-        last_row_no   = get(:loan_term)
-
-        (first_row_no..last_row_no).sum do |row_no|
-          amortization(:monthly_payment, row_no)
-        end
+      (first_row_no..last_row_no).sum do |row_no|
+        amortization(:interest, row_no)
       end
-    }
+    end
+
+    define_helper(:total_amount_paid) do
+      first_row_no  = 0
+      last_row_no   = get(:loan_term)
+
+      (first_row_no..last_row_no).sum do |row_no|
+        amortization(:monthly_payment, row_no)
+      end
+    end
 
     schedules.each do |schedule_name, _|
       define_singleton_method(schedule_name) do |attr_name, row_no|
