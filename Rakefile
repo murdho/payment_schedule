@@ -8,3 +8,8 @@ Rake::TestTask.new(:test) do |t|
 end
 
 task :default => :test
+
+task c: :console
+task :console do
+  exec './bin/console'
+end
