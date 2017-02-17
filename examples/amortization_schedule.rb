@@ -1,5 +1,3 @@
-require 'bigdecimal'
-require 'bigdecimal/util'
 require 'payment_schedule'
 require 'terminal-table'
 
@@ -8,14 +6,6 @@ require 'terminal-table'
 # 1.1 add comments
 # 2. add tests
 # 3. refactor for extracting common methods to separate module
-
-BigDecimal.class_eval do
-  alias_method :original_to_s, :to_s
-
-  def to_s(s = 'F')
-    original_to_s(s)
-  end
-end
 
 # s = AmortizationSchedule.new(
 #   loan_amount:        15250,
@@ -28,7 +18,7 @@ end
 # s.print_results
 
 class AmortizationSchedule
-  Error = Class.new(StandardError)
+  include PaymentSchedule::Common
 
   INPUT = %i(
     loan_amount
@@ -38,52 +28,12 @@ class AmortizationSchedule
     additional_fees
   )
 
-  OUTPUT = %i(
-    monthly_payment
-    last_payment_date
-    last_payment_amount
-    total_interest_paid
-    total_amount_paid
-  )
-
   HELPERS = %i(
     interest_rate_month
     monthly_payment_without_fees
   )
 
-  SCHEDULES = %i(
-    amortization
-  )
-
-  attr_accessor :input, :memory, :instructions
-
-  def initialize(**input)
-    self.input = input
-
-    self.memory = {
-      helpers:   {},
-      schedules: {}
-    }
-
-    self.instructions = {
-      helpers:   {},
-      schedules: {}
-    }
-
-    validate_input!
-    # validate_output!
-
-    register_instructions
-  end
-
-  def helpers
-    instructions[:helpers] ||= {}
-  end
-
-  def schedules
-    instructions[:schedules] ||= {}
-  end
-
+  # Util::Output
   def print_results
     puts "\nINPUTS:"
     rows = []
@@ -107,6 +57,7 @@ class AmortizationSchedule
     puts Terminal::Table.new(rows: rows)
   end
 
+  # Util::Output
   def print_schedule(schedule_name)
     first_row_no  = 0
     last_row_no   = get(:loan_term)
@@ -131,79 +82,8 @@ class AmortizationSchedule
     puts Terminal::Table.new(rows: rows)
   end
 
-  def full_schedule
-    first_row_no  = 0
-    last_row_no   = get(:loan_term)
-    schedule_name = :amortization
-
-    (first_row_no..last_row_no).each do |row_no|
-      schedules[schedule_name].each do |attr, _|
-        schedule_get(schedule_name, attr, row_no)
-      end
-    end
-  end
-
-  def range_key_hash(regular_hash)
-    supercharged_hash = regular_hash.dup
-
-    supercharged_hash.default_proc = lambda do |hash, key|
-      hash.find { |key2, _| key2 === key }&.last
-    end
-
-    supercharged_hash
-  end
-
-  def get(input_or_helper_key)
-    memoized_value = memory.dig(:helpers, input_or_helper_key)
-    return memoized_value if memoized_value
-
-    instruction_or_constant = helpers[input_or_helper_key]
-
-    helper_value = begin
-      if instruction_or_constant.respond_to?(:call)
-        instruction_or_constant.call
-      else
-        instruction_or_constant
-      end
-    end
-
-    if helper_value
-      memory[:helpers][input_or_helper_key] = helper_value
-    else
-      input[input_or_helper_key]
-    end
-  end
-
-  def schedule_get(schedule_name, attr_name, row_no)
-    memoized_value = memory.dig(:schedules, schedule_name, attr_name, row_no)
-    return memoized_value if memoized_value
-
-    instruction_or_constant = begin
-      schedules.dig(schedule_name, attr_name, row_no) ||
-        schedules.dig(schedule_name, attr_name, :default)
-    end
-
-    value = begin
-      if instruction_or_constant.respond_to?(:call)
-        instruction_or_constant.call(row_no)
-      else
-        instruction_or_constant
-      end
-    end
-
-    memory[:schedules][schedule_name] ||= {}
-    memory[:schedules][schedule_name][attr_name] ||= {}
-    memory[:schedules][schedule_name][attr_name][row_no] = value
-  end
-
-  def define_helper(name, value = nil, &algorithm)
-    instructions[:helpers][name] = value || algorithm
-  end
-
   def register_instructions
     schedules[:amortization] = amortization_instructions
-
-    validate_instructions!
 
     define_helper(:interest_rate_month) do
       (1 + get(:interest_rate_year).to_d) ** (1.to_d / 12) - 1
@@ -249,32 +129,6 @@ class AmortizationSchedule
         schedule_get(schedule_name, attr_name, row_no)
       end
     end
-  end
-
-  def validate_input!
-    INPUT.each do |input_key|
-      next if input.key?(input_key)
-
-      fail Error, "Missing required key '#{input_key}'"
-    end
-  end
-
-  def validate_output!
-    OUTPUT.each do |output_key|
-      next if instruction_present?(output_key)
-
-      fail Error, "Missing instructions for output key '#{output_key}'"
-    end
-  end
-
-  def validate_instructions!
-    if instructions[:schedules].nil? || instructions[:schedules].empty?
-      fail Error, "Please provide at least 1 instruction for a schedule"
-    end
-  end
-
-  def instruction_present?(instr_key)
-    helpers.key?(instr_key)
   end
 
   def amortization_instructions
