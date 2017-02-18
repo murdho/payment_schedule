@@ -28,7 +28,7 @@ Take a look at the example, which demostrates the simplicity of the gem.
 
 #### Example specification (spreadsheet)
 
-Algorithm implemented using a spreadsheet software: [payment-schedule-example.xlsx](#)
+Algorithm implemented using a spreadsheet software: [amortization_schedule.xlsx](examples/amortization_schedule.xlsx)
 
 Screenshot:
 
@@ -38,7 +38,7 @@ Screenshot:
 
 #### Example implementation in Ruby
 
-Algorithm implementation in Ruby, based on the spreadsheet: [amortization-schedule.rb](#)
+Algorithm implementation in Ruby, based on the spreadsheet: [amortization_schedule.rb](examples/amortization_schedule.rb)
 
 (screenshot of the output)
 
@@ -52,7 +52,7 @@ Algorithm implementation in Ruby, based on the spreadsheet: [amortization-schedu
    gem 'payment_schedule'
    ```
 
-2. In project dir, execute:
+2. In project directory, execute:
 
    ```shell
    bundle
@@ -61,8 +61,9 @@ Algorithm implementation in Ruby, based on the spreadsheet: [amortization-schedu
 3. Create a class which describes the algorithm:
 
    ```ruby
-   # Description of my awesome payment schedule algorithm.
-   # References spreadsheet payment-schedule-example.xlsx
+   # Description of My Awesome Payment Schedule algorithm.
+   # References spreadsheet examples/amortization_schedule.xlsx
+
    MyAwesomeSchedule = PaymentSchedule.new do
      required_input(
        :loan_amount,        # Cell: C5
