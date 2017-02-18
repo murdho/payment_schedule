@@ -1,34 +1,125 @@
 # PaymentSchedule
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/payment_schedule`. To experiment with that code, run `bin/console` for an interactive prompt.
+PaymentSchedule is a Ruby gem for describing and calculating payment schedules. Its goal is to make implementation and modification of payment schedule algorithms fast and easy to understand.
 
-TODO: Delete this and the text above, and describe your gem
+Requires Ruby 2.4.0 or higher, might work with as early as 2.0.
 
-## Installation
 
-Add this line to your application's Gemfile:
 
-```ruby
-gem 'payment_schedule'
-```
+## Introduction
 
-And then execute:
+#### Easy to use
 
-    $ bundle
+Simple to keep the algorithm similar to payment schedule's tabular nature. This enables faster changes in the code when the specification changes. At the same time code is clear and readable, even for a person who hasn't got much experience with such algorithms.
 
-Or install it yourself as:
 
-    $ gem install payment_schedule
 
-## Usage
+#### Fast
 
-TODO: Write usage instructions here
+It has good memory and is very lazy — that's why it calculates as little as needed and is very fast.
 
-## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Example
+
+Take a look at the example, which demostrates the simplicity of the gem.
+
+
+
+#### Example specification (spreadsheet)
+
+Algorithm implemented using a spreadsheet software: [payment-schedule-example.xlsx](#)
+
+Screenshot:
+
+![screenshot-payment-schedule-example](media/screenshot-payment-schedule-example.png)
+
+
+
+#### Example implementation in Ruby
+
+Algorithm implementation in Ruby, based on the spreadsheet: [amortization-schedule.rb](#)
+
+(screenshot of the output)
+
+
+
+## Getting Started
+
+1. Add this line to your application's Gemfile:
+
+   ```ruby
+   gem 'payment_schedule'
+   ```
+
+2. In project dir, execute:
+
+   ```shell
+   bundle
+   ```
+
+3. Create a class which describes the algorithm:
+
+   ```ruby
+   # Description of my awesome payment schedule algorithm.
+   # References spreadsheet payment-schedule-example.xlsx
+   MyAwesomeSchedule = PaymentSchedule.new do
+     required_input(
+       :loan_amount,        # Cell: C5
+       :loan_term,          # Cell: C6
+       :interest_rate_year  # Cell: C7
+     )
+     
+     # Cell: C8
+     helper(:interest_rate_month) do
+       (1 + self[:interest_rate_year]) ** (1 / 12) - 1
+     end
+     
+     # Column: I
+     component(:interest) do
+       # Cell: I6
+       row(0) { 0 }
+       
+       default do |n|
+         self[:interest_rate_month] * self[:balance, n]
+       end
+     end
+     
+     # Column: G
+     component(:balance) do
+       # Cells: G6-G7
+       row(0..1) { self[:loan_amount] }
+       
+       default do |n|
+         self[:balance, n - 1] - self[:principal, n - 1]
+       end
+     end
+   end
+   ```
+
+4. Try it out in REPL:
+
+   ```ruby
+   schedule = MyAwesomeSchedule.new(
+     loan_amount: 1000, 
+     loan_term: 12, 
+     interest_rate_year: 0.1
+   )
+
+   schedule[:balance, 12]
+   # => 86.95
+
+   schedule[:interest_rate_month]
+   # => 0.7974
+   ```
+
+5. Plug it in to your app
+
+6. Share it with customers
+
+7. Profit! :sunglasses:
+
+
 
 ## Contributing
 
