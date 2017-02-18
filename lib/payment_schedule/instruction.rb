@@ -5,13 +5,15 @@ module PaymentSchedule
     attr_accessor :required_input
     attr_accessor :helpers
     attr_accessor :components
-
-    # TODO: memoization
+    attr_accessor :helper_memory
+    attr_accessor :component_memory
 
     def initialize
-      self.required_input = []
-      self.helpers        = {}
-      self.components     = {}
+      self.required_input   = []
+      self.helpers          = {}
+      self.components       = {}
+      self.helper_memory    = {}
+      self.component_memory = {}
     end
 
     def [](name, row_no = nil)
@@ -19,11 +21,25 @@ module PaymentSchedule
     end
 
     def component_get(name, row_no)
-      instance_exec(row_no, &components[name][row_no]) if components.key?(name)
+      return unless components.key?(name)
+
+      memory_key     = [name, row_no].join(':')
+      memoized_value = component_memory[memory_key]
+      return memoized_value if memoized_value
+
+      component_memory[memory_key] = instance_exec(
+        row_no,
+        &components[name][row_no]
+      )
     end
 
     def helper_get(name)
-      instance_exec(&helpers[name]) if helpers.key?(name)
+      return unless helpers.key?(name)
+
+      memoized_value = helper_memory[name]
+      return memoized_value if memoized_value
+
+      helper_memory[name] = instance_exec(&helpers[name])
     end
 
     def require_input(*keys)
