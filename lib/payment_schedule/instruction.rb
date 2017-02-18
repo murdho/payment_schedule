@@ -2,13 +2,16 @@ require 'payment_schedule/component'
 
 module PaymentSchedule
   class Instruction
-    attr_accessor :helpers, :components
+    attr_accessor :required_input
+    attr_accessor :helpers
+    attr_accessor :components
 
     # TODO: memoization
 
     def initialize
-      self.helpers    = {}
-      self.components = {}
+      self.required_input = []
+      self.helpers        = {}
+      self.components     = {}
     end
 
     def [](name, row_no = nil)
@@ -21,6 +24,10 @@ module PaymentSchedule
 
     def helper_get(name)
       instance_exec(&helpers[name]) if helpers.key?(name)
+    end
+
+    def require_input(*keys)
+      self.required_input = keys
     end
 
     def helper(name, &definition)

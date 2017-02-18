@@ -65,7 +65,7 @@ Algorithm implementation in Ruby, based on the spreadsheet: [amortization_schedu
    # References spreadsheet examples/amortization_schedule.xlsx
 
    MyAwesomeSchedule = PaymentSchedule.new do
-     required_input(
+     require_input(
        :loan_amount,        # Cell: C5
        :loan_term,          # Cell: C6
        :interest_rate_year  # Cell: C7
