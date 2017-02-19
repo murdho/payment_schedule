@@ -57,13 +57,13 @@ AmortizationSchedule = PaymentSchedule.new do
   # COMPONENTS
 
   component(:date) do
-    row(0) { self[:start_of_schedule] }
+    row(0)  { self[:start_of_schedule] }
     default { |n| self[:date, 0].next_month(n) }
   end
 
   component(:balance) do
     rows(0..1) { self[:loan_amount] }
-    default { |n| self[:balance, n - 1] - self[:principal, n - 1] }
+    default    { |n| self[:balance, n - 1] - self[:principal, n - 1] }
   end
 
   component(:principal) do
@@ -78,12 +78,12 @@ AmortizationSchedule = PaymentSchedule.new do
   end
 
   component(:interest) do
-    row(0) { 0 }
+    row(0)  { 0 }
     default { |n| (self[:interest_rate_month] * self[:balance, n]).round(2) }
   end
 
   component(:additional_fees) do
-    row(0) { 0 }
+    row(0)  { 0 }
     default { self[:additional_fees] }
   end
 
