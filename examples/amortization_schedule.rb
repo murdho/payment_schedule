@@ -15,6 +15,14 @@ AmortizationSchedule = PaymentSchedule.new do
   # ------------------------------------------------------------------------
   # HELPERS
 
+  helper(:first_row_number) do
+    0
+  end
+
+  helper(:last_row_number) do
+    self[:loan_term]
+  end
+
   helper(:interest_rate_month) do
     (1 + self[:interest_rate_year].to_d) ** (1 / 12.to_d) - 1
   end
@@ -38,11 +46,11 @@ AmortizationSchedule = PaymentSchedule.new do
   end
 
   helper(:total_interest_paid) do
-    (0..self[:loan_term]).sum { |n| self[:interest, n] }
+    sum(:interest)
   end
 
   helper(:total_amount_paid) do
-    (0..self[:loan_term]).sum { |n| self[:monthly_payment, n] }
+    sum(:monthly_payment)
   end
 
   # ------------------------------------------------------------------------

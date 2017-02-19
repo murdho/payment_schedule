@@ -15,7 +15,7 @@ module PaymentSchedule
       self.helper_memory    = {}
       self.component_memory = {}
 
-      validate_input!
+      validate_input
     end
 
     def [](name, row_no = nil)
@@ -24,6 +24,28 @@ module PaymentSchedule
       else
         input[name] || helper_get(name)
       end
+    end
+
+    def sum(component_name)
+      row_numbers.sum { |n| self[component_name, n] }
+    end
+
+    def row_numbers
+      first_row_number = self[:first_row_number]
+      last_row_number  = self[:last_row_number]
+
+      unless first_row_number && last_row_number
+        raise Error, <<~EOS.tr("\n", ' ')
+          Please define helpers :first_row_number and
+          :last_row_number for using #{self.class}#row_numbers.
+        EOS
+      end
+
+      (first_row_number..last_row_number)
+    end
+
+    def component_names
+      components.keys
     end
 
     private
@@ -62,7 +84,7 @@ module PaymentSchedule
       helper_memory[name] = instance_exec(&helpers[name])
     end
 
-    def validate_input!
+    def validate_input
       missing_keys = instruction.required_input.reject do |required_key|
         input.key?(required_key)
       end
