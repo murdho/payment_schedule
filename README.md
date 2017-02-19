@@ -6,7 +6,7 @@
 
 PaymentSchedule is a Ruby gem for describing and calculating payment schedules. Its goal is to make implementation and modification of payment schedule algorithms fast and easy to understand.
 
-Requires Ruby 2.4.0 or higher, might work with as early as 2.0.
+Requires Ruby 2.4.0 or higher.
 
 
 
