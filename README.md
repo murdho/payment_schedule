@@ -121,6 +121,9 @@ Screenshot:
 
    schedule[:interest_rate_month]
    # => 0.7974
+
+   puts schedule
+   # => ... here would be lovely output ...
    ```
 
 5. Plug it in to your app
