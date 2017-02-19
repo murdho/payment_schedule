@@ -80,9 +80,30 @@ Screenshot:
        :interest_rate_year  # Cell: C7
      )
 
+     # Helper required by algorithm for output and summation
+     helper(:first_row_number) do
+       0
+     end
+
+     # Helper required by algorithm for output and summation
+     helper(:last_row_number) do
+       self[:loan_term]
+     end
+
      # Cell: C8
      helper(:interest_rate_month) do
-       (1 + self[:interest_rate_year]) ** (1 / 12) - 1
+       (1 + self[:interest_rate_year].to_d) ** (1 / 12.to_d) - 1
+     end
+
+     # Column: G
+     # Note: modified for simplified example
+     component(:balance) do
+       # Cells: G6-G7
+       rows(0..1) { self[:loan_amount] }
+
+       default do |n|
+         self[:balance, n - 1] - n * 5
+       end
      end
 
      # Column: I
@@ -91,17 +112,7 @@ Screenshot:
        row(0) { 0 }
 
        default do |n|
-         self[:interest_rate_month] * self[:balance, n]
-       end
-     end
-
-     # Column: G
-     component(:balance) do
-       # Cells: G6-G7
-       row(0..1) { self[:loan_amount] }
-
-       default do |n|
-         self[:balance, n - 1] - self[:principal, n - 1]
+         (self[:interest_rate_month] * self[:balance, n]).round(2)
        end
      end
    end
@@ -111,19 +122,38 @@ Screenshot:
 
    ```ruby
    schedule = MyAwesomeSchedule.new(
-     loan_amount: 1000,
-     loan_term: 12,
+     loan_amount:        1000,
+     loan_term:          12,
      interest_rate_year: 0.1
    )
 
    schedule[:balance, 12]
-   # => 86.95
+   # => 615
 
    schedule[:interest_rate_month]
-   # => 0.7974
+   # => 0.00797414042890374
 
    puts schedule
-   # => ... here would be lovely output ...
+   +----+---------+----------+
+   |    MyAwesomeSchedule    |
+   +----+---------+----------+
+   | No | Balance | Interest |
+   +----+---------+----------+
+   | 0  | 1000    | 0        |
+   | 1  | 1000    | 7.97     |
+   | 2  | 990     | 7.89     |
+   | 3  | 975     | 7.77     |
+   | 4  | 955     | 7.62     |
+   | 5  | 930     | 7.42     |
+   | 6  | 900     | 7.18     |
+   | 7  | 865     | 6.9      |
+   | 8  | 825     | 6.58     |
+   | 9  | 780     | 6.22     |
+   | 10 | 730     | 5.82     |
+   | 11 | 675     | 5.38     |
+   | 12 | 615     | 4.9      |
+   +----+---------+----------+
+   # => nil
    ```
 
 5. Plug it in to your app
