@@ -36,7 +36,9 @@ Algorithm implemented using a spreadsheet software: [amortization_schedule.xlsx]
 
 Screenshot:
 
-![screenshot-payment-schedule-example](media/screenshot-payment-schedule-example.png)
+<p align="center">
+  <img src="media/screenshot-payment-schedule-example-xlsx.png" alt="Screenshot of payment schedule example spreadsheet" />
+</p>
 
 
 
@@ -44,8 +46,11 @@ Screenshot:
 
 Algorithm implementation in Ruby, based on the spreadsheet: [amortization_schedule.rb](examples/amortization_schedule.rb)
 
-(screenshot of the output)
+Screenshot:
 
+<p align="center">
+  <img src="media/screenshot-payment-schedule-example-term.png" alt="Screenshot of payment schedule example terminal output" />
+</p>
 
 
 ## Getting Started
