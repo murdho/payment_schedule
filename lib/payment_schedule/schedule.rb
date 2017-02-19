@@ -1,3 +1,5 @@
+require 'payment_schedule/output'
+
 module PaymentSchedule
   class Schedule
     Error = Class.new(StandardError)
@@ -46,6 +48,10 @@ module PaymentSchedule
 
     def component_names
       components.keys
+    end
+
+    def to_s
+      Output.to_s(self)
     end
 
     private
