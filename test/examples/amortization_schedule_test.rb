@@ -4,9 +4,6 @@ require 'amortization_schedule'
 class AmortizationScheduleTest < Minitest::Test
   attr_reader :schedule
 
-  parallelize_me!
-  make_my_diffs_pretty!
-
   def input
     {
       loan_amount:        15250,

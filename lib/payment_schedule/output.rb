@@ -19,7 +19,10 @@ module PaymentSchedule
       private
 
       def heading(schedule)
-        names = schedule.component_names.map { |name| name.to_s.capitalize }
+        names = schedule.component_names.map do |name|
+          name.to_s.tr('_', ' ').capitalize
+        end
+
         ['No', names].flatten
       end
 
