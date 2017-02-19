@@ -1,5 +1,9 @@
 # PaymentSchedule
 
+[![Build Status](https://travis-ci.org/murdho/payment_schedule.svg?branch=master)](https://travis-ci.org/murdho/payment_schedule)
+[![Code Climate](https://lima.codeclimate.com/github/murdho/payment_schedule/badges/gpa.svg)](https://lima.codeclimate.com/github/murdho/payment_schedule)
+[![Test Coverage](https://lima.codeclimate.com/github/murdho/payment_schedule/badges/coverage.svg)](https://lima.codeclimate.com/github/murdho/payment_schedule/coverage)
+
 PaymentSchedule is a Ruby gem for describing and calculating payment schedules. Its goal is to make implementation and modification of payment schedule algorithms fast and easy to understand.
 
 Requires Ruby 2.4.0 or higher, might work with as early as 2.0.
@@ -70,27 +74,27 @@ Algorithm implementation in Ruby, based on the spreadsheet: [amortization_schedu
        :loan_term,          # Cell: C6
        :interest_rate_year  # Cell: C7
      )
-     
+
      # Cell: C8
      helper(:interest_rate_month) do
        (1 + self[:interest_rate_year]) ** (1 / 12) - 1
      end
-     
+
      # Column: I
      component(:interest) do
        # Cell: I6
        row(0) { 0 }
-       
+
        default do |n|
          self[:interest_rate_month] * self[:balance, n]
        end
      end
-     
+
      # Column: G
      component(:balance) do
        # Cells: G6-G7
        row(0..1) { self[:loan_amount] }
-       
+
        default do |n|
          self[:balance, n - 1] - self[:principal, n - 1]
        end
@@ -102,8 +106,8 @@ Algorithm implementation in Ruby, based on the spreadsheet: [amortization_schedu
 
    ```ruby
    schedule = MyAwesomeSchedule.new(
-     loan_amount: 1000, 
-     loan_term: 12, 
+     loan_amount: 1000,
+     loan_term: 12,
      interest_rate_year: 0.1
    )
 
