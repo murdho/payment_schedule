@@ -4,21 +4,22 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'payment_schedule/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "payment_schedule"
-  spec.version       = PaymentSchedule::VERSION
-  spec.authors       = ["Murdho"]
-  spec.email         = ["murdho@murdho.com"]
+  spec.name                  = "payment_schedule"
+  spec.version               = PaymentSchedule::VERSION
+  spec.authors               = ["Murdho"]
+  spec.email                 = ["murdho@murdho.com"]
 
-  spec.summary       = %q{Mild toolset for changing payment schedule algorithms to lovely Ruby code.}
-  spec.homepage      = "https://github.com/murdho/paymeny_schedule"
-  spec.license       = "MIT"
+  spec.summary               = %q{Mild toolset for changing payment schedule algorithms to lovely Ruby code.}
+  spec.homepage              = "https://github.com/murdho/paymeny_schedule"
+  spec.license               = "MIT"
+  spec.required_ruby_version = '>= 2.4.0'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+  spec.files                 = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|examples)/})
   end
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.bindir                = "exe"
+  spec.executables           = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths         = ["lib"]
 
   spec.add_runtime_dependency "terminal-table", "~> 1.7"
 
