@@ -168,6 +168,13 @@ Screenshot:
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/Murdho/payment_schedule. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
+## Wishlist
+
+Things that would make it even nicer to use.
+* Add proper documentation (preferably TomDoc) for lowering the barriers of entry
+* Replace `MyClassName = PaymentSchedule.new(&block)` with `class MyClassName < PaymentSchedule::Schedule` (or similar) to enable inheritance for schedule definitions. Definitely needs modifications to instruction finding as well
+* Algorithm for generating the schedule Ruby code automatically based on spreadsheet file
+* Add more commented examples for demonstrating flexibility, readbility and power!
 
 ## License
 
