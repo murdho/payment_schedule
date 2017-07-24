@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email                 = ["murdho@murdho.com"]
 
   spec.summary               = %q{Mild toolset for changing payment schedule algorithms to lovely Ruby code.}
-  spec.homepage              = "https://github.com/murdho/paymeny_schedule"
+  spec.homepage              = "https://github.com/murdho/payment_schedule"
   spec.license               = "MIT"
   spec.required_ruby_version = '>= 2.4.0'
 
